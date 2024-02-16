@@ -76,8 +76,7 @@ void main() {
       calculator.buttonPressed('10');
       calculator.buttonPressed('=');
 
-      expect(calculator.result,
-          '40'); // Assuming your logic directly modifies the result
+      expect(calculator.result, '40');
     });
 
     test('Division', () {
@@ -87,8 +86,7 @@ void main() {
       calculator.buttonPressed('10');
       calculator.buttonPressed('=');
 
-      expect(calculator.result,
-          '0.4'); // Assuming your logic directly modifies the result
+      expect(calculator.result, '0.4');
     });
 
     test('Clear AC', () {
@@ -99,8 +97,7 @@ void main() {
       calculator.buttonPressed('AC');
       calculator.buttonPressed('=');
 
-      expect(calculator.result,
-          '0'); // Assuming your logic directly modifies the result
+      expect(calculator.result, '0');
     });
 
     test('Expression ends with operator', () {
@@ -111,8 +108,7 @@ void main() {
       calculator.buttonPressed('+');
       calculator.buttonPressed('=');
 
-      expect(calculator.result,
-          '14'); // Assuming your logic directly modifies the result
+      expect(calculator.result, '14');
     });
 
     test('Append operator after another operator', () {
@@ -123,8 +119,7 @@ void main() {
       calculator.buttonPressed('10');
       calculator.buttonPressed('=');
 
-      expect(calculator.result,
-          '-6'); // Assuming your logic directly modifies the result
+      expect(calculator.result, '-6');
     });
   });
 }

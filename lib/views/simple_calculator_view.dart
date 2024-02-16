@@ -32,10 +32,6 @@ class _SimpleCalculatorViewState extends State<SimpleCalculatorView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black54,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.black54,
-      ),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
