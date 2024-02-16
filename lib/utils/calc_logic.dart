@@ -65,8 +65,13 @@ class CalculatorLogic {
   }
 
   String formatResult(double eval) {
+    // Intermediate rounding to address floating-point arithmetic issues
+    // Determine if rounding is necessary based on the operation's context (e.g., addition)
+    double roundedEval =
+        (eval * 1e12).round() / 1e12; // Example: round to 12 decimal places
+
     // Convert the result to a string
-    String resultStr = eval.toString();
+    String resultStr = roundedEval.toString();
 
     // Check if the result includes a decimal point and remove trailing zeros and decimal point if necessary
     if (resultStr.contains('.')) {
