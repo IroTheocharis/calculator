@@ -16,6 +16,8 @@ class CalculatorLogic {
       _clear();
     } else if (buttonText == "⌫") {
       _deleteLast();
+    } else if (buttonText == "%") {
+      _applyPercentage();
     } else if (buttonText == "=") {
       _calculateResult();
     } else {
@@ -39,8 +41,47 @@ class CalculatorLogic {
     }
   }
 
+  // Follows the android calculator logic when the botton % is pressed
+  void _applyPercentage() {
+    // Check if the equation ends with a number
+    if (!_isNumeric(equation[equation.length - 1])) {
+      // If not, remove the last operator (no operation needed for a trailing operator)
+      equation = equation.substring(0, equation.length - 1);
+    }
+
+    // Identify the last operation and the number preceding the percentage operation
+    RegExp regExp = RegExp(r'([+\-×÷])(\d+(?:\.\d+)?)$');
+    Match? match = regExp.firstMatch(equation);
+
+    if (match != null) {
+      String lastOperator = match.group(1)!;
+      double lastNumber = double.parse(match.group(2)!);
+      double percentageValue = lastNumber / 100;
+
+      // For addition and subtraction, calculate the percentage of the first number in the operation
+      if (lastOperator == '+' || lastOperator == '-') {
+        RegExp firstNumberExp = RegExp(r'(\d+(?:\.\d+)?)');
+        Match? firstNumberMatch =
+            firstNumberExp.firstMatch(equation.substring(0, match.start));
+        if (firstNumberMatch != null) {
+          double firstNumber = double.parse(firstNumberMatch.group(0)!);
+          percentageValue = (lastNumber / 100) * firstNumber;
+        }
+      }
+
+      // Replace the last number with its percentage equivalent
+      equation = equation.substring(0, match.start) +
+          lastOperator +
+          percentageValue.toString();
+    } else {
+      // If no operator is found, treat the whole number as a percentage of 100 (for standalone percentage operations)
+      double number = double.tryParse(equation) ?? 0;
+      equation = (number / 100).toString();
+    }
+  }
+
   // Claculate the result using the math_expressions package
-  void _calculateResult() {
+  void _calculateResult({bool applyPercentage = false}) {
     expression = equation;
     expression = expression.replaceAll('×', '*').replaceAll('÷', '/');
 
@@ -56,6 +97,11 @@ class CalculatorLogic {
       Expression exp = p.parse(expression);
       ContextModel cm = ContextModel();
       double eval = exp.evaluate(EvaluationType.REAL, cm);
+
+      if (applyPercentage) {
+        // Apply percentage to the whole equation result
+        eval /= 100;
+      }
 
       // Use the formatResult function to format the result
       result = formatResult(eval);
