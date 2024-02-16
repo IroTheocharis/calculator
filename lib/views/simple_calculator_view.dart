@@ -1,3 +1,4 @@
+import 'package:calculator/utils/calc_logic.dart';
 import 'package:calculator/widgets/calc_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,10 +14,19 @@ class _SimpleCalculatorViewState extends State<SimpleCalculatorView> {
   String equation = "0";
   String result = "0";
   String expression = "";
-  double equationFontSize = 38.sp;
-  double resultFontSize = 48.sp;
+  double equationFontSize = 35.sp;
+  double resultFontSize = 45.sp;
 
-  buttonPressed(String buttonText) {}
+  final CalculatorLogic calcLogic = CalculatorLogic();
+
+  void buttonPressed(String buttonText) {
+    var state = calcLogic.buttonPressed(buttonText);
+
+    setState(() {
+      equation = state['equation']!;
+      result = state['result']!;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
