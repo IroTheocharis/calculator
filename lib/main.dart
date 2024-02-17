@@ -1,4 +1,4 @@
-import 'package:calculator/views/currency_conventor_view.dart';
+import 'package:calculator/views/currency_conventer_view.dart';
 import 'package:calculator/views/simple_calculator_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -55,7 +55,7 @@ class MyHomePage extends StatelessWidget {
         body: const TabBarView(
           children: [
             SimpleCalculatorView(),
-            CurrencyConventorView(),
+            CurrencyConventerView(),
           ],
         ),
       ),

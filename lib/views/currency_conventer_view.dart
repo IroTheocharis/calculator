@@ -1,17 +1,18 @@
+import 'package:calculator/utils/currency_conventer_logic.dart';
 import 'package:calculator/widgets/calc_button.dart';
 import 'package:calculator/widgets/currency_display_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class CurrencyConventorView extends StatefulWidget {
-  const CurrencyConventorView({super.key});
+class CurrencyConventerView extends StatefulWidget {
+  const CurrencyConventerView({super.key});
 
   @override
-  State<CurrencyConventorView> createState() => _CurrencyConventorViewState();
+  State<CurrencyConventerView> createState() => _CurrencyConventerViewState();
 }
 
-class _CurrencyConventorViewState extends State<CurrencyConventorView> {
-  String equation = "0";
+class _CurrencyConventerViewState extends State<CurrencyConventerView> {
+  String expression = "0";
   String result = "";
   double currencyFontSize = 20.sp;
   double arithmeticFontSize = 30.sp;
@@ -25,8 +26,25 @@ class _CurrencyConventorViewState extends State<CurrencyConventorView> {
   String fromCurrency = 'USD';
   String toCurrency = 'EUR';
 
+  final converterLogic = CurrencyConverterLogic();
   void buttonPressed(String buttonText) {
-    //convert currncy logic
+    var state = converterLogic.updateExpression(buttonText);
+
+    setState(() {
+      expression = state['expression']!;
+      result = state['result']!;
+    });
+  }
+
+  // Example method to handle currency change
+  void onCurrencyChange(double newRate) {
+    converterLogic.updateConversionRate(newRate);
+
+    setState(() {
+      // Update UI to reflect changes from conversion rate update
+      expression = converterLogic.expression;
+      result = converterLogic.result;
+    });
   }
 
   @override
@@ -46,7 +64,7 @@ class _CurrencyConventorViewState extends State<CurrencyConventorView> {
                     children: [
                       CurrencyDisplayRow(
                         currency: fromCurrency,
-                        value: equation,
+                        value: expression,
                         onPickerTap: () => _showCurrencyPicker(true),
                       ),
                       CurrencyDisplayRow(
