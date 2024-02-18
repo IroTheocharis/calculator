@@ -4,12 +4,7 @@
   <img src="assets/icon/icon.png" width="200" height="200">
 </div>
 
-<br>
-
 A calculator app for Desquared interview.
-
-<br>
-
 
 ## App Overview
 
@@ -17,31 +12,20 @@ The calculator application, developed using Flutter, offers seamless cross-platf
 
 This functionality is particularly beneficial for individuals traveling internationally, providing them with up-to-date currency conversion to aid in financial planning and transactions.
 
-<br>
-
 <div align="center">
   <img src="assets/8shots_so.png">
 </div>
 
-<br>
-
 ### Tech Stack
-
-<br>
 
 This application is developed using the Flutter framework, a UI toolkit by Google.
 
 To support currency conversion functionalities, the app integrates with a public API called FXRates. This API provides real-time exchange rate data, ensuring that currency conversions within the app are accurate and up-to-date. 
 
-<br>
-
 ## Project Structure
-
-<br>
 
 ### Folder Structure
 
-<br>
 
 ```md
 .
@@ -63,11 +47,7 @@ To support currency conversion functionalities, the app integrates with a public
     └── main.dart
 ```
 
-<br>
-
 ### Version Control Structure
-
-<br>
 
 Although the project is developed by a single person, version control practices have been implemented throughout its development.
 
