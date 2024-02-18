@@ -1,7 +1,11 @@
+import 'package:calculator/services/currency_conventer_api.dart';
+
 class CurrencyConverterLogic {
+  final CurrencyAPI currencyAPI = CurrencyAPI();
   String expression = "";
   String result = "";
-  double conversionRate = 3.3; // Default conversion rate, update as needed
+  String fromCurrency = 'USD';
+  String toCurrency = 'EUR';
 
   // Utility function to check if a character is a numeric digit
   bool _isNumeric(String s) {
@@ -12,26 +16,33 @@ class CurrencyConverterLogic {
   Map<String, String> updateExpression(String buttonText) {
     if (buttonText == "⌫") {
       _deleteLast();
-    } else if (_isNumeric(buttonText) || buttonText == ".") {
+    } else {
       if (expression == "0" && buttonText != ".") {
         // Replace "0" with the number unless adding a decimal point to "0"
         expression = buttonText;
-      } else {
-        // Append the button text to the expression
+      } else if (buttonText == "." && !expression.contains(".")) {
+        // Allow only one decimal point
         expression += buttonText;
+      } else if (_isNumeric(buttonText)) {
+        // Count only numeric digits, exclude decimal point or other characters
+        int digitCount = expression.replaceAll(RegExp(r'[^0-9]'), '').length;
+        if (digitCount < 15) {
+          // Allow appending digits only if the total count is less than 15
+          expression += buttonText;
+        }
       }
 
-      _performConversion(); // Automatically perform conversion
+      performConversion(); // Automatically perform conversion
     }
     return {'expression': expression, 'result': result};
   }
 
-  void _performConversion() {
-    if (expression.isNotEmpty) {
-      double amount = double.tryParse(expression) ?? 0.0;
-      double convertedAmount = amount * conversionRate;
-      result = convertedAmount.toStringAsFixed(2);
-    }
+  // Perform conversion using the cached rate
+  void performConversion() {
+    double rate = currencyAPI.getConversionRate(toCurrency);
+    double amount = double.tryParse(expression) ?? 0.0;
+    double convertedAmount = amount * rate;
+    result = convertedAmount.toStringAsFixed(2);
   }
 
   // Deletes the last character from the equation or resets it to "0"
@@ -41,12 +52,23 @@ class CurrencyConverterLogic {
     } else {
       expression = "0";
     }
-    _performConversion();
+    performConversion();
   }
 
-  // Method to update conversion rate (call this when currencies change)
-  void updateConversionRate(double newRate) {
-    conversionRate = newRate;
-    _performConversion(); // Re-calculate conversion with new rate
+  // Initialize with fetching rates for the default base currency
+  CurrencyConverterLogic() {
+    updateBaseCurrency(fromCurrency);
+  }
+
+  // Call this when the base currency changes
+  Future<void> updateBaseCurrency(String newBaseCurrency) async {
+    await currencyAPI.fetchAndCacheRates(newBaseCurrency);
+    fromCurrency = newBaseCurrency;
+    performConversion(); // Perform conversion with updated rates
+  }
+
+  void onConversionCurrencyChange(String newConversionCurrency) {
+    toCurrency = newConversionCurrency;
+    performConversion(); // Use the cached rate for the new conversion currency to calculate the result
   }
 }

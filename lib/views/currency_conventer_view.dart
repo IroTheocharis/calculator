@@ -1,3 +1,5 @@
+import 'package:calculator/models/currency_model.dart';
+import 'package:calculator/services/currency_conventer_api.dart';
 import 'package:calculator/utils/currency_conventer_logic.dart';
 import 'package:calculator/widgets/calc_button.dart';
 import 'package:calculator/widgets/currency_display_row.dart';
@@ -17,34 +19,48 @@ class _CurrencyConventerViewState extends State<CurrencyConventerView> {
   double currencyFontSize = 20.sp;
   double arithmeticFontSize = 30.sp;
 
-  // Example currency list
-  List<String> currencies = [
-    'USD',
-    'EUR',
-    'GBP',
-  ];
-  String fromCurrency = 'USD';
-  String toCurrency = 'EUR';
+  List<Currency> currencyList = [];
+
+  String fromCurrency = 'USD'; //Default value for base
+  String toCurrency = 'EUR'; //Default value for convers
 
   final converterLogic = CurrencyConverterLogic();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCurrencies();
+  }
+
   void buttonPressed(String buttonText) {
     var state = converterLogic.updateExpression(buttonText);
-
     setState(() {
       expression = state['expression']!;
       result = state['result']!;
     });
   }
 
-  // Example method to handle currency change
-  void onCurrencyChange(double newRate) {
-    converterLogic.updateConversionRate(newRate);
-
+  void onBaseCurrencyChange(String newBaseCurrency) async {
+    await converterLogic.updateBaseCurrency(newBaseCurrency);
     setState(() {
-      // Update UI to reflect changes from conversion rate update
-      expression = converterLogic.expression;
       result = converterLogic.result;
     });
+  }
+
+  void onConversionCurrencyChange(String newConversionCurrency) async {
+    converterLogic.onConversionCurrencyChange(newConversionCurrency);
+    setState(() {
+      result = converterLogic.result;
+    });
+  }
+
+  void fetchCurrencies() async {
+    try {
+      currencyList = await CurrencyAPI().fetchCurrencies();
+      setState(() {});
+    } catch (e) {
+      //
+    }
   }
 
   @override
@@ -57,24 +73,20 @@ class _CurrencyConventerViewState extends State<CurrencyConventerView> {
           children: [
             // Build the currency rows
             Expanded(
-              child: LayoutBuilder(
-                builder: (BuildContext context, BoxConstraints constraints) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      CurrencyDisplayRow(
-                        currency: fromCurrency,
-                        value: expression,
-                        onPickerTap: () => _showCurrencyPicker(true),
-                      ),
-                      CurrencyDisplayRow(
-                        currency: toCurrency,
-                        value: result,
-                        onPickerTap: () => _showCurrencyPicker(false),
-                      ),
-                    ],
-                  );
-                },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  CurrencyDisplayRow(
+                    currency: fromCurrency,
+                    value: expression,
+                    onPickerTap: () => _showCurrencyPicker(true),
+                  ),
+                  CurrencyDisplayRow(
+                    currency: toCurrency,
+                    value: result,
+                    onPickerTap: () => _showCurrencyPicker(false),
+                  ),
+                ],
               ),
             ),
 
@@ -121,31 +133,60 @@ class _CurrencyConventerViewState extends State<CurrencyConventerView> {
     );
   }
 
+  // List with all available currencies
+
   void _showCurrencyPicker(bool isFromCurrency) {
     showModalBottomSheet(
       backgroundColor: const Color.fromARGB(255, 59, 59, 59),
       context: context,
       builder: (BuildContext context) {
-        return ListView.builder(
-          itemCount: currencies.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              title: Text(
-                currencies[index],
-                style: const TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                setState(() {
-                  if (isFromCurrency) {
-                    fromCurrency = currencies[index];
-                  } else {
-                    toCurrency = currencies[index];
-                  }
-                });
-                Navigator.pop(context); // Close the bottom sheet
-              },
-            );
-          },
+        return Padding(
+          padding: EdgeInsets.only(top: 20.sp),
+          child: ListView.builder(
+            itemCount: currencyList.length,
+            itemBuilder: (BuildContext context, int index) {
+              Currency currency = currencyList[index];
+              return ListTile(
+                title: Padding(
+                  padding: EdgeInsets.all(5.sp),
+                  child: Row(
+                    children: [
+                      Text(
+                        currency.code,
+                        style: const TextStyle(color: Colors.orange),
+                      ),
+                      SizedBox(
+                        width: 20.w,
+                      ),
+                      Flexible(
+                        // Use Flexible to prevent overflow
+                        child: Text(
+                          currency.name,
+                          style: const TextStyle(
+                            color: Color.fromARGB(255, 199, 199, 199),
+                          ),
+                          overflow: TextOverflow
+                              .ellipsis, // Use ellipsis to handle text that still overflows
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                onTap: () {
+                  setState(() {
+                    if (isFromCurrency) {
+                      fromCurrency = currency.code;
+                      onBaseCurrencyChange(fromCurrency);
+                    } else {
+                      toCurrency = currency.code;
+                      onConversionCurrencyChange(toCurrency);
+                    }
+                  });
+                  Navigator.pop(context); // Close the bottom sheet
+                },
+              );
+            },
+          ),
         );
       },
     );
