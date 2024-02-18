@@ -12,7 +12,6 @@ A calculator app for Desquared interview.
 
 
 ## App Overview
----
 
 The calculator application, developed using Flutter, offers seamless cross-platform functionality, ensuring compatibility with both Android and iOS devices. This app is not only designed for standard calculations but also features a currency converter, integrating a public ***API***. 
 
@@ -37,7 +36,6 @@ To support currency conversion functionalities, the app integrates with a public
 <br>
 
 ## Project Structure
----
 
 <br>
 
