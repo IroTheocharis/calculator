@@ -144,7 +144,7 @@ class CalculatorLogic {
             .toStringAsExponential(adjustPrecision > 0 ? adjustPrecision : 0);
       }
     }
-
+    equation = resultStr;
     return resultStr;
   }
 

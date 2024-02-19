@@ -11,13 +11,19 @@ class SimpleCalculatorView extends StatefulWidget {
 }
 
 class _SimpleCalculatorViewState extends State<SimpleCalculatorView> {
-  String equation = "0";
-  String result = "0";
-  String expression = "";
-  double equationFontSize = 35.sp;
-  double resultFontSize = 45.sp;
+  late String equation;
+  late String result;
+  late String expression;
 
   final CalculatorLogic calcLogic = CalculatorLogic();
+
+  @override
+  void initState() {
+    super.initState();
+    equation = "0";
+    result = "0";
+    expression = "";
+  }
 
   void buttonPressed(String buttonText) {
     var state = calcLogic.buttonPressed(buttonText);
@@ -51,7 +57,7 @@ class _SimpleCalculatorViewState extends State<SimpleCalculatorView> {
                         child: Text(
                           equation,
                           style: TextStyle(
-                            fontSize: equationFontSize,
+                            fontSize: 35.sp,
                             color: Colors.white38,
                           ),
                         ),
@@ -63,7 +69,7 @@ class _SimpleCalculatorViewState extends State<SimpleCalculatorView> {
                           ' = $result ',
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: resultFontSize,
+                            fontSize: 45.sp,
                             color: Colors.white,
                           ),
                         ),
